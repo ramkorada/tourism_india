@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 30% 97%;
+    --foreground: 160 30% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 160 30% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 30% 10%;
+
+    --primary: 160 45% 28%;
+    --primary-foreground: 40 30% 97%;
+
+    --secondary: 195 60% 40%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 40 20% 92%;
+    --muted-foreground: 160 10% 45%;
+
+    --accent: 25 70% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 40 20% 88%;
+    --input: 40 20% 88%;
+    --ring: 160 45% 28%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 160 30% 10%;
+    --sidebar-foreground: 40 30% 97%;
+    --sidebar-primary: 160 45% 28%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 160 20% 18%;
+    --sidebar-accent-foreground: 40 30% 97%;
+    --sidebar-border: 160 20% 18%;
+    --sidebar-ring: 195 60% 40%;
+
+    /* Custom tokens */
+    --eco: 140 50% 40%;
+    --eco-foreground: 0 0% 100%;
+    --cultural: 25 70% 50%;
+    --cultural-foreground: 0 0% 100%;
+    --coastal: 195 60% 40%;
+    --coastal-foreground: 0 0% 100%;
+    --sand: 40 40% 90%;
+    --hero-overlay: 160 30% 10%;
+  }
+
+  .dark {
+    --background: 160 30% 6%;
+    --foreground: 40 20% 95%;
+    --card: 160 25% 10%;
+    --card-foreground: 40 20% 95%;
+    --popover: 160 25% 10%;
+    --popover-foreground: 40 20% 95%;
+    --primary: 160 45% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 195 50% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 160 15% 15%;
+    --muted-foreground: 40 15% 70%;
+    --accent: 25 65% 58%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 160 15% 20%;
+    --input: 160 15% 20%;
+    --ring: 160 45% 50%;
+    --sidebar-background: 160 30% 4%;
+    --sidebar-foreground: 40 20% 95%;
+    --sidebar-primary: 160 45% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 160 15% 12%;
+    --sidebar-accent-foreground: 40 20% 95%;
+    --sidebar-border: 160 15% 12%;
+    --sidebar-ring: 195 50% 50%;
+
+    --eco: 140 50% 50%;
+    --cultural: 25 70% 58%;
+    --coastal: 195 60% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .hero-gradient-overlay {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--hero-overlay) / 0.3) 0%,
+      hsl(var(--hero-overlay) / 0.6) 60%,
+      hsl(var(--hero-overlay) / 0.85) 100%
+    );
+  }
+
+  .category-eco {
+    @apply bg-eco text-eco-foreground;
+  }
+
+  .category-cultural {
+    @apply bg-cultural text-cultural-foreground;
+  }
+
+  .category-coastal {
+    @apply bg-coastal text-coastal-foreground;
+  }
+
+  .card-hover {
+    @apply transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+  }
+
+  .dark .text-gradient {
+    @apply from-[hsl(160,45%,55%)] to-[hsl(195,60%,55%)];
+  }
+
+  .section-padding {
+    @apply py-16 md:py-24 px-4 md:px-8;
+  }
+}
+
+@layer utilities {
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+}

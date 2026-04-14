@@ -7,7 +7,7 @@ interface Msg {
   content: string;
 }
 
-const CHAT_URL = "/api/chat";
+const CHAT_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/chat` : "/api/chat";
 
 const SUGGESTIONS = [
   "Best beaches in AP 🏖️",
@@ -68,7 +68,7 @@ const Chatbot = () => {
         {
           role: "assistant",
           content:
-            "Sorry, I'm having trouble connecting. Please make sure the Flask server is running on port 5000.",
+            "Sorry, I'm having trouble connecting to the backend server. Please make sure the API is online.",
         },
       ]);
     }

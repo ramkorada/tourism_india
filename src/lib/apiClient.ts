@@ -3,7 +3,7 @@
  * Handles JWT token storage and authenticated requests.
  */
 
-const API_BASE = "/api";
+const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
 
 /** Retrieve the stored JWT token. */
 export const getToken = (): string | null => localStorage.getItem("auth_token");

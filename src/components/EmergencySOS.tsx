@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Shield, Phone, X, Plus, Trash2, UserPlus, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { apiFetch } from "@/lib/apiClient";
 
 interface EmergencyContact {
   id: string;
@@ -35,13 +36,8 @@ const EmergencySOS = () => {
 
   const fetchContacts = async () => {
     try {
-      const token = localStorage.getItem("auth_token");
-      if (!token) return;
-      const resp = await fetch("/api/emergency-contacts", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (resp.ok) {
-        const data = await resp.json();
+      const { data, error } = await apiFetch("/emergency-contacts");
+      if (!error && data) {
         setContacts(data);
       }
     } catch {
@@ -52,21 +48,15 @@ const EmergencySOS = () => {
   const addContact = async () => {
     if (!newName.trim() || !newPhone.trim()) return;
     try {
-      const token = localStorage.getItem("auth_token");
-      if (!token) return;
-      const resp = await fetch("/api/emergency-contacts", {
+      const { error } = await apiFetch("/emergency-contacts", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({
           name: newName.trim(),
           phone: newPhone.trim(),
           relationship: newRelation.trim() || null,
         }),
       });
-      if (resp.ok) {
+      if (!error) {
         setNewName("");
         setNewPhone("");
         setNewRelation("");
@@ -80,13 +70,12 @@ const EmergencySOS = () => {
 
   const deleteContact = async (id: string) => {
     try {
-      const token = localStorage.getItem("auth_token");
-      if (!token) return;
-      await fetch(`/api/emergency-contacts/${id}`, {
+      const { error } = await apiFetch(`/emergency-contacts/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
-      setContacts((prev) => prev.filter((c) => c.id !== id));
+      if (!error) {
+        setContacts((prev) => prev.filter((c) => c.id !== id));
+      }
     } catch {
       /* ignore */
     }

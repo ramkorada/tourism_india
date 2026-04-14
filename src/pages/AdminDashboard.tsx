@@ -36,7 +36,8 @@ const AdminDashboard = () => {
     
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/dashboard-data?key=${encodeURIComponent(password)}`);
+      const baseUrl = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
+      const res = await fetch(`${baseUrl}/admin/dashboard-data?key=${encodeURIComponent(password)}`);
       
       if (!res.ok) {
         toast({

@@ -6,7 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import Index from "./pages/Index";
-import Destinations from "./pages/Destinations";
+import StatesList from "./pages/StatesList";
+import StateDetail from "./pages/StateDetail";
 import DestinationDetail from "./pages/DestinationDetail";
 import EcoAwareness from "./pages/EcoAwareness";
 import Auth from "./pages/Auth";
@@ -29,7 +30,8 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/destinations" element={<Destinations />} />
+              <Route path="/states" element={<StatesList />} />
+              <Route path="/state/:id" element={<StateDetail />} />
               <Route path="/destination/:id" element={<DestinationDetail />} />
               <Route path="/eco-awareness" element={<EcoAwareness />} />
               <Route path="/auth" element={<Auth />} />

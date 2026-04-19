@@ -12,7 +12,7 @@ const Navbar = () => {
 
   const links = [
     { to: "/", label: "Home" },
-    { to: "/destinations", label: "Destinations" },
+    { to: "/states", label: "States" },
     { to: "/trip-planner", label: "Trip Planner" },
     { to: "/favorites", label: "Favorites" },
     { to: "/eco-awareness", label: "Eco Awareness" },
@@ -23,7 +23,7 @@ const Navbar = () => {
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center gap-2 group">
           <MapPin className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
-          <span className="font-display text-xl font-bold text-foreground">AP Tourism</span>
+          <span className="font-display text-xl font-bold text-foreground">Incredible India</span>
         </Link>
 
         {/* Desktop */}

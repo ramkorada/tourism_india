@@ -24,30 +24,27 @@ const SUGGESTIONS = [
   "Compare Goa vs Andhra beaches",
 ];
 
-// Call Pollinations.ai text API directly — no backend needed
+// Call Pollinations.ai text API directly using the anonymous GET endpoint
 const callPollinationsAI = async (messages: Msg[]): Promise<string> => {
-  const payload = {
-    model: "openai",
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      ...messages.map((m) => ({ role: m.role, content: m.content })),
-    ],
-    seed: 42,
-    private: true,
-  };
-
-  const response = await fetch("https://text.pollinations.ai/openai", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+  // Format the last few messages for context
+  const contextLimit = 6;
+  const recentMessages = messages.slice(-contextLimit);
+  
+  let fullPrompt = "";
+  recentMessages.forEach(m => {
+    fullPrompt += `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}\n`;
   });
+
+  const url = `https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}?system=${encodeURIComponent(SYSTEM_PROMPT)}&model=openai`;
+
+  const response = await fetch(url);
 
   if (!response.ok) {
     throw new Error(`Pollinations API error: ${response.status}`);
   }
 
-  const data = await response.json();
-  return data?.choices?.[0]?.message?.content || "Sorry, I couldn't generate a response. Please try again.";
+  const text = await response.text();
+  return text || "Sorry, I couldn't generate a response. Please try again.";
 };
 
 const Chatbot = () => {

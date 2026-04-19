@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Sparkles, RotateCcw } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { apiFetch } from "../lib/apiClient";
 
 interface Msg {
   role: "user" | "assistant";
@@ -21,22 +20,43 @@ const SUGGESTIONS = [
   "Compare Goa vs Andhra beaches",
 ];
 
-const callBackendAI = async (messages: Msg[]): Promise<string> => {
-  // We send the raw user/assistant history to our backend
-  // The backend already handles the SYSTEM_PROMPT, injection of state data, and logic.
-  const contextLimit = 6;
-  const recentMessages = messages.slice(-contextLimit);
+const callMockAI = async (messages: Msg[]): Promise<string> => {
+  // Simulate network delay / "Thinking" time (1.5 to 2.5 seconds)
+  const delay = Math.floor(Math.random() * 1000) + 1500;
+  await new Promise(resolve => setTimeout(resolve, delay));
 
-  const { data, error } = await apiFetch<{ reply: string }>("/chat", {
-    method: "POST",
-    body: JSON.stringify({ messages: recentMessages })
-  });
+  const lastMsg = messages[messages.length - 1].content.toLowerCase();
 
-  if (error) {
-    throw new Error(error);
+  if (lastMsg.includes("kerala")) {
+    return "Kerala is beautiful! 🌴 Here is a quick 5-day itinerary:\n\n**Day 1:** Arrive in Kochi, explore Fort Kochi.\n**Day 2:** Drive to Munnar, visit tea gardens.\n**Day 3:** Munnar sightseeing (Mattupetty Dam, Echo Point).\n**Day 4:** Head to Alleppey for a houseboat overnight stay on the backwaters.\n**Day 5:** Return to Kochi and depart. \n\n*Budget:* Around ₹15,000 - ₹25,000 per person.";
+  }
+  
+  if (lastMsg.includes("budget") || lastMsg.includes("cheap") || lastMsg.includes("money")) {
+    return "Traveling on a budget? 💰 Great idea!\n\nHere are some of the best budget-friendly destinations in India:\n- **Rishikesh:** Affordable hostels and amazing riverside cafes.\n- **Hampi:** Ancient ruins with cheap homestays.\n- **Gokarna:** Beautiful beaches, very budget-friendly alternative to Goa.\n- **Pushkar:** Amazing desert vibes and very cheap street food.\n\n*Tip:* Always use local sleeper trains and state transport buses to save money!";
   }
 
-  return data?.reply || "Sorry, I couldn't generate a response. Please try again.";
+  if (lastMsg.includes("beach") || lastMsg.includes("goa") || lastMsg.includes("andhra") || lastMsg.includes("coast")) {
+    return "India has over 7,500 km of coastline! 🏖️\n\n- **Goa:** Famous for its legendary nightlife and vibrant beaches like Baga and Anjuna.\n- **Andhra Pradesh:** For pristine, less crowded shores, visit **Rishikonda Beach** or **Yarada Beach** in Vizag.\n- **Andaman & Nicobar:** Radhanagar Beach is consistently ranked among the best in all of Asia!\n\nWhat kind of beach vibe are you looking for?";
+  }
+
+  if (lastMsg.includes("emergency") || lastMsg.includes("police") || lastMsg.includes("help") || lastMsg.includes("hospital")) {
+    return "🚨 **Emergency Numbers in India:**\n\n- **National Emergency:** 112\n- **Police:** 100\n- **Fire:** 101\n- **Ambulance:** 108\n- **Women Helpline:** 1091\n\nPlease stay safe! If you need immediate assistance, call 112 anywhere in India.";
+  }
+
+  if (lastMsg.includes("tirupati") || lastMsg.includes("temple") || lastMsg.includes("darshan")) {
+    return "🛕 **Tirupati Temple Travel Tips:**\n\n- The Sri Venkateswara Temple is one of the most visited sacred sites globally.\n- **Darshan Booking:** Always book your Special Entry Darshan (₹300) online 2-3 months in advance via the official TTD website.\n- **Dress Code:** Traditional wear is strictly enforced (Dhoti/Kurta for men, Sarees/Chudidars with dupatta for women).\n- **Must Try:** Don't miss the famous Tirupati Laddu Prasadam!";
+  }
+
+  if (lastMsg.includes("araku") || lastMsg.includes("hill station")) {
+    return "🌿 **Araku Valley** is a stunning hill station in Andhra Pradesh!\n\n- **Best Time to Visit:** October to March.\n- **Highlights:** Expansive coffee plantations, the local Tribal Museum, and the famous **Borra Caves** (a must-visit 150-million-year-old limestone cave).\n- **Travel Tip:** Take the Vistadome glass-roof train from Vizag to Araku for breathtaking valley views along the journey!";
+  }
+
+  if (lastMsg.includes("food") || lastMsg.includes("eat") || lastMsg.includes("biryani")) {
+    return "🍛 **Indian Culinary Highlights:**\n\n- **North India:** Don't miss Chole Bhature in Delhi or Butter Chicken in Punjab.\n- **South India:** Try the authentic Hyderabadi or Andhra Biryani (spicy!), and traditional Dosa/Idli in Tamil Nadu.\n- **Street food:** Pani Puri and Vada Pav are absolute must-tries if you're in Mumbai.\n\n*A quick tip: stick to bottled water and busy stalls for street food!*";
+  }
+
+  // Default fallback response
+  return "That's a fantastic question about incredible India! 🇮🇳\n\nIndia offers a massive variety of landscapes, cultures, and traditions. Depending on your preferences, you could visit the royal palaces of Rajasthan, the lush green backwaters of the South, the majestic Himalayas in the North, or the ancient temples in Andhra Pradesh.\n\nCould you specify which state or type of experience (like adventure, spiritual, or relaxing) you are looking for?";
 };
 
 const Chatbot = () => {
@@ -60,7 +80,7 @@ const Chatbot = () => {
     setLoading(true);
 
     try {
-      const reply = await callBackendAI(newMessages);
+      const reply = await callMockAI(newMessages);
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     } catch (err) {
       console.error("AI error:", err);

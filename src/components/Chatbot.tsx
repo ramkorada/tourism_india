@@ -1,17 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Sparkles, RotateCcw } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { apiFetch } from "../lib/apiClient";
 
 interface Msg {
   role: "user" | "assistant";
   content: string;
 }
 
-// System prompt for India tourism context
-const SYSTEM_PROMPT = `You are an expert India travel guide AI assistant for "Incredible India" tourism platform. 
-You help tourists plan trips, discover destinations, understand local culture, food, weather, budget, and safety.
-Be friendly, concise, and enthusiastic. Use emojis occasionally. Format responses with markdown when helpful (bullet points, bold for place names).
-Focus on Indian states, destinations, temples, beaches, wildlife, heritage sites, hill stations, and practical travel advice.`;
+
 
 const SUGGESTIONS = [
   "Best beaches in India 🏖️",
@@ -24,39 +21,22 @@ const SUGGESTIONS = [
   "Compare Goa vs Andhra beaches",
 ];
 
-const callPollinationsAI = async (messages: Msg[]): Promise<string> => {
-  // Format the last few messages for context
+const callBackendAI = async (messages: Msg[]): Promise<string> => {
+  // We send the raw user/assistant history to our backend
+  // The backend already handles the SYSTEM_PROMPT, injection of state data, and logic.
   const contextLimit = 6;
   const recentMessages = messages.slice(-contextLimit);
 
-  // Build the message array format supported by the new API
-  const payloadMessages = [
-    { role: "system", content: SYSTEM_PROMPT },
-    ...recentMessages.map(m => ({
-      role: m.role,
-      content: m.content
-    }))
-  ];
-
-  const response = await fetch("https://text.pollinations.ai/", {
+  const { data, error } = await apiFetch<{ reply: string }>("/chat", {
     method: "POST",
-    body: JSON.stringify({
-      messages: payloadMessages,
-      model: "openai"
-    })
+    body: JSON.stringify({ messages: recentMessages })
   });
 
-  if (!response.ok) {
-    throw new Error(`Pollinations API error: ${response.status}`);
+  if (error) {
+    throw new Error(error);
   }
 
-  const text = await response.text();
-  // If the API somehow returns the deprecation JSON error as text due to non-200, check it
-  if (text.includes("IMPORTANT NOTICE") || text.includes("deprecated")) {
-    throw new Error("API Deprecation Error");
-  }
-  
-  return text || "Sorry, I couldn't generate a response. Please try again.";
+  return data?.reply || "Sorry, I couldn't generate a response. Please try again.";
 };
 
 const Chatbot = () => {
@@ -80,7 +60,7 @@ const Chatbot = () => {
     setLoading(true);
 
     try {
-      const reply = await callPollinationsAI(newMessages);
+      const reply = await callBackendAI(newMessages);
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     } catch (err) {
       console.error("AI error:", err);

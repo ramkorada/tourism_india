@@ -24,26 +24,38 @@ const SUGGESTIONS = [
   "Compare Goa vs Andhra beaches",
 ];
 
-// Call Pollinations.ai text API directly using the anonymous GET endpoint
 const callPollinationsAI = async (messages: Msg[]): Promise<string> => {
   // Format the last few messages for context
   const contextLimit = 6;
   const recentMessages = messages.slice(-contextLimit);
-  
-  let fullPrompt = "";
-  recentMessages.forEach(m => {
-    fullPrompt += `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}\n`;
+
+  // Build the message array format supported by the new API
+  const payloadMessages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    ...recentMessages.map(m => ({
+      role: m.role,
+      content: m.content
+    }))
+  ];
+
+  const response = await fetch("https://text.pollinations.ai/", {
+    method: "POST",
+    body: JSON.stringify({
+      messages: payloadMessages,
+      model: "openai"
+    })
   });
-
-  const url = `https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}?system=${encodeURIComponent(SYSTEM_PROMPT)}&model=openai`;
-
-  const response = await fetch(url);
 
   if (!response.ok) {
     throw new Error(`Pollinations API error: ${response.status}`);
   }
 
   const text = await response.text();
+  // If the API somehow returns the deprecation JSON error as text due to non-200, check it
+  if (text.includes("IMPORTANT NOTICE") || text.includes("deprecated")) {
+    throw new Error("API Deprecation Error");
+  }
+  
   return text || "Sorry, I couldn't generate a response. Please try again.";
 };
 
